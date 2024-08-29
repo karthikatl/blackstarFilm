@@ -1,0 +1,32 @@
+// Variables
+$font-family-body: 'Matter';
+$font-weight-500: 500;
+$font-style-n: normal;
+$font-family-heading:  'Panama';
+$font-size: 78px;
+
+@font-face {
+  font-family: $font-family-body;
+  src: url('~/assets/fonts/Matter-Medium.woff') format('woff');
+  font-weight: $font-weight-500;
+  font-style: $font-style-n;
+}
+
+@font-face {
+  font-family: $font-family-heading;
+  src: url('~/assets/fonts/Panama-Bold.woff') format('woff');
+  font-weight: $font-weight-500;
+  font-style: $font-style-n;
+}
+
+body {
+  font-family: $font-family-body ;
+}
+blockquote, ul, li hr, figure, p, pre {
+  font-family: $font-family-body ;
+}
+
+h1{
+  font-family: $font-family-heading ;
+  font-size: $font-size;
+}
