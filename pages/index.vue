@@ -7,7 +7,6 @@
     </div>
 </template>
 <script>
-import FilterListTab from '@/components/FilterListTab.vue';
 
 
 </script>

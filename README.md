@@ -1,5 +1,11 @@
 # Nuxt 3 Minimal Starter
+Clone the project .
 
+
+npm install
+
+Run Project
+npm run dev
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
 ## Setup
