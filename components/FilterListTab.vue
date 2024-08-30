@@ -1,40 +1,38 @@
 <template>
-  <div class="tabs pt-24" >
-    <div class="tab-list items-end  max-w-screen-2xl mx-auto px-4 sm:px-8">
+  <div class="tabs pt-24">
+    <div class="tab-list items-end max-w-screen-2xl mx-auto px-4 sm:px-8">
       <button
         v-for="(item, index) in items"
         :key="index"
         @click="selectedTab = index"
-        :style="{  }"
-        :class="['tab space-x-2 items-center text-2xl rounded-t-3xl border-t border-black border-x px-5 py-5 transition-all duration-200 block',
-        { 'active-tab -mb-1 pb-12': selectedTab === index,
-          'pt-5 pb-5': selectedTab !== index 
-        }
-        , item.backgroundColor]"
+        :class="[
+          'tab space-x-2 items-center text-2xl rounded-t-3xl border-t border-black border-x px-5 py-5 transition-all duration-200 block',
+          { 'active-tab -mb-1 pb-12': selectedTab === index, 'pt-5 pb-5': selectedTab !== index },
+          item.backgroundColor
+        ]"
       >
         {{ item.label }}
       </button>
     </div>
     <div class="tab-content" :class="items[selectedTab].backgroundColor">
       <div v-if="selectedTab === 0">
-        <div >
-        <Filter @updateFilms="updateFilms" />
+        <div>
+          <Filter @updateSelectedTags="handleTagUpdate" />
 
-        <!-- Display loading state -->
-        <div v-if="loading">Loading...</div>
+          <!-- Display loading state -->
+          <div v-if="loading">Loading...</div>
 
-        <!-- Display films or message if no films -->
-        <div v-else class="container max-w-screen-2xl mx-auto px-4 sm:px-8 pt-8">
-          <div v-if="filteredFilms.length === 0">No films available.</div>
-          <div v-else class="md:grid md:grid-cols-3 md:gap-8 xl:gap-12 space-y-6 md:space-y-0 ">
-            <FilmCard v-for="film in filteredFilms" :key="film.id" :film="film" />
-            <div class="col-span-full flex justify-center">
-               <button v-if="hasMore && !loading" @click="loadMore" class="film-card-btn mx-auto">Load More</button>
+          <!-- Display films or message if no films -->
+          <div v-else class="container max-w-screen-2xl mx-auto px-4 sm:px-8 pt-8">
+            <div v-if="filteredFilms.length === 0">No films available.</div>
+            <div v-else class="md:grid md:grid-cols-3 md:gap-8 xl:gap-12 space-y-6 md:space-y-0">
+              <FilmCard v-for="film in filteredFilms" :key="film.id" :film="film" />
+              <div class="col-span-full flex justify-center">
+                <button v-if="hasMore && !loading" @click="loadMore" class="film-card-btn mx-auto">Load More</button>
+              </div>
             </div>
           </div>
-          
         </div>
-      </div>
       </div>
       <div v-else-if="selectedTab === 1">
         <!-- Content for Tab 2 -->
@@ -50,38 +48,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useFilmData } from '../composables/useFilmData';
 import type { IFilm } from '../types/filmType';
-const props = defineProps<{
-  tabColor: string;
-}>();
+
 const selectedTab = ref(0);
 const filteredFilms = ref<IFilm[]>([]);
-const hasMore = ref(true);
 
 // Fetch film data using the composable function
-const { films, loadMore, loading } = useFilmData();
+const { films, loadMore, loading, setSelectedTags, hasMore } = useFilmData();
 
-// Assign films to filteredFilms
-filteredFilms.value = films.value;
-
-const updateFilms = (newFilms: IFilm[], isLoading: boolean, moreDataAvailable: boolean) => {
+// Watch the films and update filteredFilms when films change
+watch(films, (newFilms) => {
+  console.log('Films updated:', newFilms); // Debugging: Check if films are being fetched
   filteredFilms.value = newFilms;
-  loading.value = isLoading;
-  hasMore.value = moreDataAvailable;
-  console.log("moreDataAvailable", moreDataAvailable)
+});
+
+// Handle tag updates and fetch new films based on selected tags
+const handleTagUpdate = (newSelectedTags: number[]) => {
+  console.log("Selected Tags Updated:", newSelectedTags);
+  setSelectedTags(newSelectedTags); // Update tags and fetch new films
 };
 
+// Tab items
 const items = ref([
   { label: 'FILMS A-Z', content: [], backgroundColor: 'bg-bsf13orange' }, 
   { label: 'Tab 2', content: 'Content for Tab 2', backgroundColor: 'bg-bsf13purple' }, 
   { label: 'Tab 3', content: 'Content for Tab 3', backgroundColor: 'bg-bsf13green' },
 ]);
 
-if (selectedTab.value === 0 && films.value.length === 0) {
-  loadMore();
-}
+// Load films initially when the component is mounted
+
+onMounted(() => {
+  console.log('Component mounted, triggering initial load'); // Debugging: Check if mounted is called
+  if (films.value.length === 0) {
+    filteredFilms.value = films.value;
+    loadMore(); // Trigger the initial load of films
+  }
+});
 </script>
 
 <style scoped>
@@ -93,7 +97,6 @@ if (selectedTab.value === 0 && films.value.length === 0) {
   border-top: 1px solid #000000;
   border-right: 1px solid #000000;
   border-left: 1px solid #000000;
-
   cursor: pointer;
 }
 

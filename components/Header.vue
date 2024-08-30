@@ -4,15 +4,9 @@
         
       </div>
     
-      <div class="container mx-auto flex items-center justify-between pt-4 pb-2 lg:p-4 lg:pb-2">
-        <h1 class="text-2xl"><img src="../assets/images/logo.svg"></h1>
-        <nav class="flex space-x-8">
-          <NuxtLink to="/" class="hover:text-gray-300">Home</NuxtLink>
-          <NuxtLink to="/how-to-fest" class="hover:text-gray-300">How to Fest</NuxtLink>
-          <NuxtLink to="/tickets-passes" class="hover:text-gray-300">Tickets & Passes</NuxtLink>
-          <NuxtLink to="/program" class="hover:text-gray-300">Program</NuxtLink>
-          <NuxtLink to="/login" class="hover:text-gray-300">Login</NuxtLink>
-        </nav>
+      <div class="container mx-auto flex items-center justify-between pt-4 pb-2  lg:p-4 lg:pb-2">
+        <h1 class="text-2xl sm:p-2"><img src="../assets/images/logo.svg"></h1>
+        
       </div>
     </header>
   

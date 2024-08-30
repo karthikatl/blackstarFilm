@@ -30,37 +30,33 @@
             </div>
             <div v-if="showCategory" class="mt-4">
               <ul v-if="tags.length">
-  <li v-for="tag in tags" :key="tag.id" class="flex mt-2 items-center">
-    <div class="relative">
-      <input
-        type="checkbox"
-        :value="tag.id"
-        :checked="selectedTags.includes(tag.id)"
-        @change="handleTagChange(tag.id, $event)"
-        class="peer absolute opacity-0 w-5 h-5"
-        :id="`${tag.id}`"
-      />
-      <div
-        class="w-5 h-5 border rounded-full border-black  peer-checked:transparent flex items-center justify-center"
-      >
-      <svg
-            v-if="selectedTags.includes(tag.id)"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            class="w-3 h-3 text-black"
-          >
-            <circle cx="12" cy="12" r="8" fill="currentColor"/>
-          </svg>
-
-      </div>
-    </div>
-    <label :for="`${tag.id}`" class="ms-2 text-sm font-medium">
-      {{ tag.name }}
-    </label>
-  </li>
-</ul>
-
+                <li v-for="tag in tags" :key="tag.id" class="flex mt-2 items-center">
+                  <div class="relative">
+                    <input
+                      type="checkbox"
+                      :value="tag.id"
+                      :checked="selectedTags.includes(tag.id)"
+                      @change="handleTagChange(tag.id, $event)"
+                      class="peer absolute opacity-0 w-5 h-5"
+                      :id="`${tag.id}`"
+                    />
+                    <div class="w-5 h-5 border rounded-full border-black  peer-checked:transparent flex items-center justify-center">
+                      <svg
+                        v-if="selectedTags.includes(tag.id)"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        class="w-3 h-3 text-black"
+                      >
+                        <circle cx="12" cy="12" r="8" fill="currentColor"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <label :for="`${tag.id}`" class="ms-2 text-sm font-medium">
+                    {{ tag.name }}
+                  </label>
+                </li>
+              </ul>
             </div>
           </div>
           <!-- Add more filter options as needed -->
@@ -72,22 +68,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useFetch } from '#app';
 import { useTags } from '../composables/useTags';
-import type { IFilm } from '../types/filmType';
 
 const emit = defineEmits<{
-  (e: 'updateFilms', newFilms: IFilm[], isLoading: boolean, hasMore: boolean): void;
+  (e: 'updateSelectedTags', selectedTags: number[]): void;
 }>();
 
-const { tags, loading: tagsLoading, error: tagsError } = useTags();
-console.log('Tags:', tags.value);
+const { tags } = useTags();
+
 const showFilter = ref(false);
 const showCategory = ref(false);
 const selectedTags = ref<number[]>([]);
-const page = ref(1);
-const allFilms = ref<IFilm[]>([]);
-const hasMore = ref(true);
 
 const toggleCategory = () => {
   showCategory.value = !showCategory.value;
@@ -101,58 +92,6 @@ const closeFilter = () => {
   showFilter.value = false;
 };
 
-const fetchFilms = async (reset = false) => {
-  if (reset) {
-    page.value = 1;
-    allFilms.value = [];
-    hasMore.value = true;
-  }
-
-  if (!hasMore.value) {
-    return; // No more films to load
-  }
-
-  const baseUrl = 'https://wp.blackstarfest.org/wp-json/wp/v2/festival-film';
-  const perPage = 9;
-  const queryParams = new URLSearchParams({
-    per_page: perPage.toString(),
-    page: page.value.toString(),
-    _year: '2024',
-    rich: '1',
-    not_hidden: '1',
-  });
-
-
-  if (selectedTags.value.length > 0) {
-    queryParams.append('eventive-tag', selectedTags.value.join(','));
-  }
-
-  const url = `${baseUrl}?${queryParams.toString()}`;
-
-  try {
-    const filmsData = await $fetch<IFilm[]>(url);
-  
-
-
-    allFilms.value = reset ? filmsData : [...allFilms.value, ...filmsData];
-
-    // Determine if there are more films to load
-    hasMore.value = filmsData.length === perPage;
-    // Emit the updated films data to the parent
-    emit('updateFilms', allFilms.value, false, hasMore.value);
-
-    // Increment the page number for the next load more
-    page.value += 1;
-
-  } catch (error) {
-    console.error('Error fetching films:', error);
-    hasMore.value = false; // No more data can be loaded on error
-    if (reset) {
-      emit('updateFilms', [], false, false); // Emit an empty array in case of error when resetting
-    }
-  }
-};
-
 const handleTagChange = (id: number, event: Event) => {
   const isChecked = (event.target as HTMLInputElement).checked;
 
@@ -164,13 +103,13 @@ const handleTagChange = (id: number, event: Event) => {
 
   console.log('Updated Selected Tags (Array):', [...selectedTags.value]);
 
-
-  fetchFilms(true);
+  // Emit the updated selected tags to the parent or other components
+  emit('updateSelectedTags', [...selectedTags.value]);
 };
+
 </script>
 
 <style scoped>
-
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.3s ease;
 }
