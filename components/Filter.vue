@@ -20,9 +20,9 @@
         </div>
         <div class="mb-4 md:grid md:grid-cols-3 md:gap-8 xl:gap-12 space-y-6 md:space-y-0">
           <div>
-            <div class="flex justify-between items-center border-b border-black p-2">
+            <div @click="toggleCategory" class="flex justify-between items-center border-b border-black p-2">
               <p class="text-lg font-semibold">Category / Tag</p>
-              <div @click="toggleCategory">
+              <div >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
                   <path :d="showCategory ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                 </svg>

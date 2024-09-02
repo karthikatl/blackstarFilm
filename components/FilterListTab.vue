@@ -60,13 +60,12 @@ const { films, loadMore, loading, setSelectedTags, hasMore } = useFilmData();
 
 // Watch the films and update filteredFilms when films change
 watch(films, (newFilms) => {
-  console.log('Films updated:', newFilms); // Debugging: Check if films are being fetched
+// Debugging: Check if films are being fetched
   filteredFilms.value = newFilms;
 });
 
 // Handle tag updates and fetch new films based on selected tags
 const handleTagUpdate = (newSelectedTags: number[]) => {
-  console.log("Selected Tags Updated:", newSelectedTags);
   setSelectedTags(newSelectedTags); // Update tags and fetch new films
 };
 
@@ -77,13 +76,12 @@ const items = ref([
   { label: 'Tab 3', content: 'Content for Tab 3', backgroundColor: 'bg-bsf13green' },
 ]);
 
-// Load films initially when the component is mounted
+
 
 onMounted(() => {
-  console.log('Component mounted, triggering initial load'); // Debugging: Check if mounted is called
   if (films.value.length === 0) {
     filteredFilms.value = films.value;
-    loadMore(); // Trigger the initial load of films
+    loadMore(); 
   }
 });
 </script>
@@ -109,9 +107,7 @@ onMounted(() => {
   border: 1px solid #000000;
 }
 
-.film-card {
-  border: 1px solid #000000;
-}
+
 
 .film-card-btn {
   border-radius: 9999px;

@@ -1,27 +1,23 @@
 import { ref } from 'vue';
 import type { IFilm } from '../types/filmType';
+import { useNuxtApp, useAsyncData } from 'nuxt/app';
 
 export function useFilmData() {
   const films = ref<IFilm[]>([]);
   const hasMore = ref(true);
-  const loading = ref(false);
+ const loading = ref(true);
   const page = ref(1);
   const selectedTags = ref<number[]>([]);
 
   const fetchFilms = async (reset = false) => {
     if (reset) {
-      page.value = 1; // Reset to the first page when new tags are selected
+      page.value = 1; // Reset to the first page
       films.value = []; // Clear the current films
       hasMore.value = true; // Reset the hasMore flag
-      console.log('Resetting films and page due to new filters');
+      loading.value = true;
     }
 
-    if (!hasMore.value || loading.value) {
-      return; // Prevent further loading if there are no more items or if already loading
-    }
 
-    loading.value = true;
-    console.log('Fetching films, loading:', loading.value);
 
     try {
       const baseUrl = 'https://wp.blackstarfest.org/wp-json/wp/v2/festival-film';
@@ -41,29 +37,36 @@ export function useFilmData() {
       const url = `${baseUrl}?${queryParams.toString()}`;
       console.log("Fetching URL:", url);
 
-      const data = await $fetch<IFilm[]>(url);
-      console.log("Fetched data:", data);
+   const data = await $fetch<IFilm[]>(url);
+     
 
-      if (data && data.length > 0) {
-        films.value.push(...data); // Add the fetched films to the current array
-        hasMore.value = data.length === perPage; // If fewer than perPage items are returned, stop loading more
-        console.log('Films after fetching:', films.value);
-        page.value += 1; // Increment the page only after a successful fetch
+    console.log("Fetching data:", data);
+
+      if (data && data && data.length > 0) {
+       const filmIds = new Set(films.value.map(film => film.id));
+        const uniqueFilms = data.filter(film => !filmIds.has(film.id));
+        films.value = [...films.value, ...uniqueFilms]
+      
+        hasMore.value = data.length === perPage; 
+        if (hasMore.value) {
+          page.value += 1; 
+        }
       } else {
-        hasMore.value = false; // No more films to load
+        hasMore.value = false; 
       }
     } catch (error) {
       console.error("Error fetching films:", error);
       hasMore.value = false;
     } finally {
-      loading.value = false;
-      console.log('Loading complete, loading:', loading.value);
+    loading.value = false;
     }
   };
 
   const loadMore = async () => {
-    if (hasMore.value && !loading.value) {
-      await fetchFilms(); // Fetch the next set of films
+
+    if (hasMore.value ){
+      await fetchFilms(); // Fetch films before incrementing the page number
+
     }
   };
 

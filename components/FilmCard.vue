@@ -1,7 +1,7 @@
 <template>
   <div class="film-card-container">
-    <div class="film-card relative border-inherit border rounded-3xl explainer p-3 md:p-6 lg:p-8 flex flex-col justify-between h-full">
-      <pre class="film-image rounded-t-3xl border-t border-black" v-html="film.featured_image_rendered.card"></pre>
+    <div class="film-card relative border-inherit border  border-black rounded-3xl explainer p-3 md:p-6 lg:p-8 flex flex-col justify-between h-full">
+      <pre class="film-image rounded-3xl  border-black" v-html="film.featured_image_rendered.card"></pre>
       <h3 class="text-2xl lg:text-3xl 2xl:text-4xl font-sans font-normal mt-6 mb-3">{{ film.title.rendered }}</h3>
       <p class="bsf13-prose md:pr-4 my-4 flex-grow">{{ film.short_documentary }} </p>
       <p v-if="directors.length">Director: 
@@ -41,6 +41,10 @@ const directors = computed(() => {
 <style scoped >
 .film-card{
   border: 1px solid #000000;
+}
+.film-image img {
+  border: 1px solid #000000;
+  border-radius: 1.5rem !important;
 }
 .film-card-btn {
     border-radius: 9999px;
